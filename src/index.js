@@ -50,7 +50,6 @@ async function onSearch(e) {
   lightbox.refresh();
 }
 
-// Функція, що записує у галерею розмітку картки з необхідними для оформлення стилями і властивостями завантаженого зображення
 function createCards(cards) {
   return cards
     .map(
@@ -87,7 +86,6 @@ function createCards(cards) {
     .join('');
 }
 
-// Фнкція, що додає картки в галерею
 function renderCards(cards) {
   refs.galleryContainer.insertAdjacentHTML('beforeend', createCards(cards));
 }
@@ -100,19 +98,8 @@ async function onClickLoadMoreBtn() {
   if (totalPages === 1) {
     refs.loadMoreBtn.classList.add('is-hidden');
   }
-  // window.addEventListener('scroll', onWindowScroll);
   new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
     captionDelay: 250,
   });
 }
-// function onWindowScroll() {
-//   const { height: cardHeight } = document
-//     .querySelector('.gallery')
-//     .firstElementChild.getBoundingClientRect();
-
-//   window.scrollBy({
-//     top: cardHeight * 2,
-//     behavior: 'smooth',
-//   });
-// }
