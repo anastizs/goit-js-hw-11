@@ -31,23 +31,26 @@ async function onSearch(e) {
   refs.loadMoreBtn.classList.add('is-hidden');
 
   searchQuery = e.currentTarget.searchQuery.value.trim();
+  try {
+    const { totalHits, hits } = await fetchImages(searchQuery);
+    // e.target.reset();
+    if (hits.length === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    } else {
+      renderCards(hits);
+      Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+      totalPages = Math.ceil(totalHits / perPage);
+    }
 
-  const { totalHits, hits } = await fetchImages(searchQuery);
-  e.target.reset();
-  if (hits.length === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  } else {
-    renderCards(hits);
-    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-    totalPages = Math.ceil(totalHits / perPage);
+    if (totalHits > perPage) {
+      refs.loadMoreBtn.classList.remove('is-hidden');
+    }
+    lightbox.refresh();
+  } catch (error) {
+    console.log(error.message);
   }
-
-  if (totalHits > perPage) {
-    refs.loadMoreBtn.classList.remove('is-hidden');
-  }
-  lightbox.refresh();
 }
 
 function createCards(cards) {
@@ -92,14 +95,17 @@ function renderCards(cards) {
 
 async function onClickLoadMoreBtn() {
   totalPages -= 1;
-  const { hits } = await fetchImages(searchQuery);
-  renderCards(hits);
+  try {
+    const { hits } = await fetchImages(searchQuery);
+    renderCards(hits);
 
-  if (totalPages === 1) {
-    refs.loadMoreBtn.classList.add('is-hidden');
+    if (totalPages === 1) {
+      refs.loadMoreBtn.classList.add('is-hidden');
+      Notiflix.Notify.success(
+        `We're sorry, but you've reached the end of search results`
+      );
+    }
+  } catch (error) {
+    console.log(error.message);
   }
-  new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
 }
